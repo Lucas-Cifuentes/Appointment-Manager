@@ -1,14 +1,14 @@
 import React from 'react';
 
 import {Text, View, StyleSheet, FlatList} from 'react-native';
-
 import Card from './card';
+import AsyncStorage from '@react-native-community/async-storage';
 
 const appointment = ({list, setList}) => {
   const eliminateAppointment = (id) => {
-    setList((currentAppointment) => {
-      return currentAppointment.filter((appointment) => appointment.id !== id);
-    });
+    const filterList = list.filter((appointment) => appointment.id !== id);
+    setList(filterList);
+    AsyncStorage.setItem('list', JSON.stringify(filterList));
   };
 
   return (
@@ -19,12 +19,7 @@ const appointment = ({list, setList}) => {
           <FlatList
             data={list}
             renderItem={({item}) => (
-              <Card
-                data={item}
-                eliminateAppointment={eliminateAppointment}
-                setList={setList}
-                list={list}
-              />
+              <Card data={item} eliminateAppointment={eliminateAppointment} />
             )}
             keyExtractor={(appointment) => appointment.id}
           />

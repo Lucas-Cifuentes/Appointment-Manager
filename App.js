@@ -1,12 +1,33 @@
-import React, {useState} from 'react';
-import {StyleSheet, Text, View, TouchableHighlight} from 'react-native';
+import React, {useEffect, useState} from 'react';
+import {StyleSheet, Text, View, TouchableHighlight, Alert} from 'react-native';
 
 import Form from './src/components/form';
 import Appointments from './src/components/appointment';
 
+import AsyncStorage from '@react-native-community/async-storage';
+
 const App = () => {
   const [hideForm, setHideForm] = useState(true);
   const [list, setList] = useState([]);
+
+  useEffect(() => {
+    getDataStorage();
+  }, [list]);
+
+  const getDataStorage = async () => {
+    try {
+      const dataStorage = await AsyncStorage.getItem('list');
+      if (dataStorage) {
+        setList(JSON.parse(dataStorage));
+      }
+    } catch (error) {
+      Alert.alert('ERROR', 'Failed to get data from storage', [
+        {
+          text: 'OK',
+        },
+      ]);
+    }
+  };
 
   return (
     <>

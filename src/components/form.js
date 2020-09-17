@@ -8,14 +8,15 @@ import {
   ScrollView,
   Alert,
 } from 'react-native';
+import AsyncStorage from '@react-native-community/async-storage';
 
-const form = ({setList, list, setHideForm}) => {
+const form = ({list, setHideForm}) => {
   const [patient, setPatient] = useState('');
   const [owner, setOwner] = useState('');
   const [phone, setPhone] = useState('');
   const [symptoms, setSymptoms] = useState('');
 
-  const handleSubmiit = () => {
+  const handleSubmiit = async () => {
     if (patient === '' || owner === '' || phone === '' || symptoms === '') {
       return Alert.alert('ERROR', 'All fields are required', [
         {
@@ -30,7 +31,15 @@ const form = ({setList, list, setHideForm}) => {
         symptoms,
       };
       const newAppointment = [...list, Appointment];
-      setList(newAppointment);
+      try {
+        await AsyncStorage.setItem('list', JSON.stringify(newAppointment));
+      } catch (error) {
+        Alert.alert('ERROR', 'Failed to save appointment', [
+          {
+            text: 'OK',
+          },
+        ]);
+      }
       setHideForm(true);
     }
   };
@@ -55,8 +64,6 @@ const form = ({setList, list, setHideForm}) => {
           onChangeText={(text) => setPhone(text)}
           style={styles.input}
         />
-        <Text style={styles.label}>Date:</Text>
-        <Text style={styles.label}>Hour:</Text>
         <Text style={styles.label}>Symptoms:</Text>
         <TextInput
           onChangeText={(text) => setSymptoms(text)}
